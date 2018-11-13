@@ -4,6 +4,7 @@ import com.study.onlineshop.dao.UserDao;
 import com.study.onlineshop.dao.jdbc.mapper.UserRowMapper;
 import com.study.onlineshop.entity.User;
 
+import javax.sql.DataSource;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
@@ -24,6 +25,8 @@ public class JdbcUserDao implements UserDao {
 
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
 
+    private DataSource dataSource;
+
     public void setConnectionParameters(Properties properties) {
         this.url = properties.getProperty("url");
         this.name = properties.getProperty("user");
@@ -36,7 +39,7 @@ public class JdbcUserDao implements UserDao {
 
     //"SELECT sole FROM users WHERE name = ?"
     public String getUserSole(String name) {
-        try (Connection connection = getConnection();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_USER_SOLE_SQL);
         ) {
             statement.setString(1, name);
@@ -58,7 +61,7 @@ public class JdbcUserDao implements UserDao {
 
     @Override //"SELECT id, name, creation_date, role FROM user WHERE name = ?"
     public User getUser(String name) {
-        try (Connection connection = getConnection();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_USER_SQL);
             ) {
             statement.setString(1, name);
@@ -79,7 +82,7 @@ public class JdbcUserDao implements UserDao {
     }
     @Override //"SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END is_authorized FROM user WHERE user = ? AND password = ?";
     public boolean isAuthenticated(String login, String password) {
-        try (Connection connection = getConnection();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_LOGIN_SQL);
         ) {
             statement.setString(1, login);
@@ -106,7 +109,7 @@ public class JdbcUserDao implements UserDao {
 
     @Override //"SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END IS_ALLOWED FROM PERMISSIONS WHERE ROLE = ? AND OBJECT = ?;";
     public boolean isAuthorized(String role, String object) {
-        try (Connection connection = getConnection();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_PERMISSION_SQL);
             ) {
             statement.setString(1, role);
@@ -124,6 +127,11 @@ public class JdbcUserDao implements UserDao {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     private Connection getConnection() throws SQLException {

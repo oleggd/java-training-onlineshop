@@ -27,8 +27,6 @@ public class LogoutServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        PageGenerator pageGenerator = PageGenerator.instance();
-
         HttpServletRequest httpServletRequest = (HttpServletRequest) req;
         Cookie[] cookies = httpServletRequest.getCookies();
 

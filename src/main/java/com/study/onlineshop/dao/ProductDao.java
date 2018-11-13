@@ -2,6 +2,7 @@ package com.study.onlineshop.dao;
 
 import com.study.onlineshop.entity.Product;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface ProductDao {
     void removeById(int id);
 
     Product getProduct(int id);
+
+    void setDataSource(DataSource dataSource);
 }

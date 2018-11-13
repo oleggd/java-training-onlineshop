@@ -1,15 +1,11 @@
 package com.study.onlineshop.web.servlet;
 
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
 import com.study.onlineshop.entity.Cart;
 import com.study.onlineshop.entity.Product;
 import com.study.onlineshop.entity.Session;
-import com.study.onlineshop.service.CartService;
-import com.study.onlineshop.service.ProductService;
 import com.study.onlineshop.service.SecurityService;
 import com.study.onlineshop.service.ServiceLocator;
 import com.study.onlineshop.service.impl.DefaultSecurityService;
-import com.study.onlineshop.web.templater.PageGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -50,13 +46,6 @@ public class CartDeleteServlet extends HttpServlet {
 
         resp.sendRedirect("/cart");
     }
-
-    /*@Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        PageGenerator pageGenerator = PageGenerator.instance();
-        resp.sendRedirect("/cart/delete");
-    }*/
 
     public void setSecurityService(SecurityService securityService) {
         this.securityService = securityService;
