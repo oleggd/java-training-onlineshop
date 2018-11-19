@@ -3,12 +3,15 @@ package com.study.onlineshop.dao.jdbc;
 import com.study.onlineshop.dao.ProductDao;
 import com.study.onlineshop.dao.jdbc.mapper.ProductRowMapper;
 import com.study.onlineshop.entity.Product;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository("productDao")
 public class JdbcProductDao implements ProductDao {
 
     private static final String GET_ALL_SQL = "SELECT id, name, creation_date, price FROM product;";
@@ -110,15 +113,9 @@ public class JdbcProductDao implements ProductDao {
     }
 
     @Override
+    @Autowired
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    /*private Connection getConnection() throws SQLException {
-        String url = "jdbc:postgresql://localhost/db2_onlineshop";
-        String name = "postgres";
-        String password = "1234";
-
-        return DriverManager.getConnection(url, name, password);
-    }*/
 }

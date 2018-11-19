@@ -63,29 +63,24 @@ public class ProductController {
     }
 
     @RequestMapping(path = "/product/edit", method = RequestMethod.POST)
-    public void productEditSave(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String productEditSave(@RequestParam("id") int id, @RequestParam("name") String name, @RequestParam("price") Double price, @RequestParam("creationDate") String creationDate) throws IOException {
 
         Product product = new Product();
 
         // get product info for saving
-        String currentID = request.getParameter("id");
-        String name      = request.getParameter("name");
-        LocalDateTime    creationDate = LocalDateTime.parse(request.getParameter("creationDate"));
-        double price     = Double.parseDouble(request.getParameter("price"));
-
-        product.setId(Integer.parseInt(currentID));
+        product.setId(id);
         product.setName(name);
-        product.setCreationDate(creationDate);
+        product.setCreationDate(LocalDateTime.parse(creationDate));
         product.setPrice(price);
-        productService.set(product);
 
-        response.sendRedirect("/products");
+        productService.set(product);
+        return "redirect:/products";
     }
 
     @RequestMapping(path = "/product/delete", method = RequestMethod.GET)
-    public void productDelete(HttpServletRequest request, HttpServletResponse response, @RequestParam("id") int id) throws IOException {
+    public String productDelete(@RequestParam("id") int id) throws IOException {
         productService.removeById(id);
-        response.sendRedirect("/products");
+        return "redirect:/products";
     }
 
     @RequestMapping(path = "/product/add", method = RequestMethod.GET)
@@ -97,20 +92,14 @@ public class ProductController {
     }
 
     @RequestMapping(path = "/product/add", method = RequestMethod.POST)
-    protected void productAddPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+    protected String productAddPost(@RequestParam("name") String name, @RequestParam("price") Double price, @RequestParam("creationDate") String creationDate ) throws ServletException, IOException {
         Product product = new Product();
 
-        // get product for editing
-        String name      = request.getParameter("name");
-        LocalDateTime creationDate = LocalDateTime.parse(request.getParameter("creationDate"));
-        double price     = Double.parseDouble(request.getParameter("price"));
-
         product.setName(name);
-        product.setCreationDate(creationDate);
+        product.setCreationDate(LocalDateTime.parse(creationDate));
         product.setPrice(price);
-        productService.add(product);
 
-        response.sendRedirect("/products");
+        productService.add(product);
+        return "redirect:/products";
     }
 }

@@ -2,9 +2,10 @@ package com.study.onlineshop.web.filters;
 
 import com.study.onlineshop.entity.Session;
 import com.study.onlineshop.service.SecurityService;
-import com.study.onlineshop.service.ServiceLocator;
 import com.study.onlineshop.service.impl.DefaultSecurityService;
 import com.study.onlineshop.web.templater.PageGenerator;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -14,11 +15,9 @@ import java.io.IOException;
 
 public class AdminSecurityFilter implements Filter {
 
-    private SecurityService securityService = ServiceLocator.getService(DefaultSecurityService .class);;
+    private SecurityService securityService;
 
-    public AdminSecurityFilter(/*SecurityService defaultSecurityService*/) {
-        //this.securityService = defaultSecurityService;
-    }
+    public AdminSecurityFilter() {}
 
     // chain of responsibility
     @Override
@@ -65,7 +64,10 @@ public class AdminSecurityFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        ServletContext servletContext = filterConfig.getServletContext();
+        WebApplicationContext webApplicationContext =  WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
 
+        securityService = webApplicationContext.getBean(DefaultSecurityService.class);
     }
 
 }

@@ -4,17 +4,22 @@ import com.study.onlineshop.dao.UserDao;
 import com.study.onlineshop.entity.Session;
 import com.study.onlineshop.entity.User;
 import com.study.onlineshop.service.SecurityService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.*;
-
+@Service("securityService")
 public class DefaultSecurityService implements SecurityService {
 
     private UserDao userDao;
     private List<Session> sessionList = new ArrayList<>();
+    @Value("${sessionExpireTimeLimit}")
+    long sessionExpireTimeLimit;
 
+    @Autowired
     public DefaultSecurityService(UserDao UserDao) {
         this.userDao = UserDao;
     }
@@ -77,7 +82,8 @@ public class DefaultSecurityService implements SecurityService {
             session.setUser(user);
             session.setToken(UUID.randomUUID().toString());
 
-            session.setExpireDate(LocalDateTime.now().plusHours(5));
+
+            session.setExpireDate(LocalDateTime.now().plusHours(sessionExpireTimeLimit));
             sessionList.add(session);
             return session;
 
@@ -101,6 +107,20 @@ public class DefaultSecurityService implements SecurityService {
         while (iterator.hasNext()) {
             session = (Session) iterator.next();
             if (session.getToken().equals(token)) {
+                iterator.remove();
+            }
+        }
+    }
+
+    @Override
+    public void removeSession(String tokenName) {
+
+        Iterator iterator = sessionList.iterator();
+        Session session;
+
+        while (iterator.hasNext()) {
+            session = (Session) iterator.next();
+            if (session.getToken().equals(tokenName)) {
                 iterator.remove();
             }
         }

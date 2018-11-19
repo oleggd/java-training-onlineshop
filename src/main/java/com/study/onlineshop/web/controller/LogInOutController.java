@@ -47,9 +47,7 @@ public class LogInOutController {
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     protected void logout(HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
 
-        //HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         Cookie[] cookies = request.getCookies();
-
         securityService.removeSession(cookies,"user-token");
         response.sendRedirect("/login");
     }

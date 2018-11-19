@@ -2,8 +2,9 @@ package com.study.onlineshop.web.filters;
 
 import com.study.onlineshop.entity.Session;
 import com.study.onlineshop.service.SecurityService;
-import com.study.onlineshop.service.ServiceLocator;
 import com.study.onlineshop.service.impl.DefaultSecurityService;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -12,12 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class UserSecurityFilter implements Filter {
-    private SecurityService securityService = ServiceLocator.getService(DefaultSecurityService.class);
+    private SecurityService securityService;
 
     public UserSecurityFilter() {}
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        ServletContext servletContext = filterConfig.getServletContext();
+        WebApplicationContext webApplicationContext =  WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+
+        securityService = webApplicationContext.getBean(DefaultSecurityService.class);
     }
 
     // chain of responsibility

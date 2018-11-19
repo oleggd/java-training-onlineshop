@@ -22,4 +22,6 @@ public interface SecurityService {
 
    void removeSession(Cookie[] cookies, String tokenName);
 
+   void removeSession(String tokenName);
+
 }

@@ -9,9 +9,7 @@ import com.study.onlineshop.service.SecurityService;
 import com.study.onlineshop.web.templater.PageGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -27,18 +25,19 @@ import java.util.Iterator;
 public class CartController {
     @Autowired
     private SecurityService securityService;
+    //@Autowired
+    //private CartService cartService;
     @Autowired
     private ProductService productService;
 
     PageGenerator pageGenerator = PageGenerator.instance();
 
     @RequestMapping(path = "/cart", method = RequestMethod.GET)
-    protected void getCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @ResponseBody
+    protected String getCart(@CookieValue(value = "user-token",required = false) String userToken) throws ServletException, IOException {
         HashMap<String, Object> parameters = new HashMap<>();
 
-        Cookie[] cookies = request.getCookies();
-        Session session = securityService.getSession(cookies,"user-token");
-
+        Session session = securityService.getSession(userToken);
         Cart cart = session.getCart();
 
         if (cart != null) {
@@ -48,32 +47,30 @@ public class CartController {
             parameters.put("products", new ArrayList<>());
         }
         String page = pageGenerator.getPage("cart", parameters);
-        response.getWriter().write(page);
+        return page;
     }
 
     @RequestMapping(path = "/cart/add", method = RequestMethod.GET)
-    protected void addToCart(HttpServletRequest request, HttpServletResponse response, @RequestParam("id") int id) throws ServletException, IOException {
+    protected String addToCart(@CookieValue(value = "user-token",required = false) String userToken, @RequestParam("id") int id) throws ServletException, IOException {
 
-        Product product  = productService.getProduct(id);
-        Cookie[] cookies = request.getCookies();
-        Session session  = securityService.getSession(cookies,"user-token");
+        Session session  = securityService.getSession(userToken);
 
         Cart cart = session.getCart();
         if ( cart == null) {
             cart = new Cart();
         }
+        Product product  = productService.getProduct(id);
         cart.getProducts().add(product);
         session.setCart(cart);
 
         System.out.println("cartAdd doGet : " + id);
-        response.sendRedirect("/products");
+        return "redirect:/products";
     }
 
     @RequestMapping(path = "/cart/delete", method = RequestMethod.GET)
-    protected void deleteFromCart(HttpServletRequest request, HttpServletResponse response, @RequestParam("id") int id) throws ServletException, IOException {
+    protected String deleteFromCart(@CookieValue(value = "user-token",required = false) String userToken, @RequestParam("id") int id) throws ServletException, IOException {
 
-        Cookie[] cookies = request.getCookies();
-        Session session = securityService.getSession(cookies,"user-token");
+        Session session = securityService.getSession(userToken);
 
         Cart cart = session.getCart();
         if ( cart == null) {
@@ -93,6 +90,6 @@ public class CartController {
         session.setCart(cart);
 
         System.out.println("cartDelete doGet : " + id);
-        response.sendRedirect("/cart");
+        return "redirect:/cart";
     }
 }

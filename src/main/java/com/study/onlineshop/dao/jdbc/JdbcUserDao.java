@@ -3,6 +3,8 @@ package com.study.onlineshop.dao.jdbc;
 import com.study.onlineshop.dao.UserDao;
 import com.study.onlineshop.dao.jdbc.mapper.UserRowMapper;
 import com.study.onlineshop.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.security.MessageDigest;
@@ -10,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Properties;
 
+@Repository("userDao")
 public class JdbcUserDao implements UserDao {
 
     String url = "";//"jdbc:postgresql://localhost/db2_onlineshop";
@@ -24,14 +27,8 @@ public class JdbcUserDao implements UserDao {
     private static final String GET_PERMISSION_SQL = "SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END is_allowed FROM permissions WHERE role = ? AND object = ?;";
 
     private static final UserRowMapper USER_ROW_MAPPER = new UserRowMapper();
-
+    @Autowired
     private DataSource dataSource;
-
-    public void setConnectionParameters(Properties properties) {
-        this.url = properties.getProperty("url");
-        this.name = properties.getProperty("user");
-        this.password = properties.getProperty("password");
-    }
 
     public User getCurrentUser(){
         return user;
@@ -132,10 +129,6 @@ public class JdbcUserDao implements UserDao {
     @Override
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, name, password);
     }
 
     private String getEncryptedPassword(String password, String sole) {
